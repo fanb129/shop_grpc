@@ -3,15 +3,17 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth/credentials"
+	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 	"github.com/go-redis/redis/v8"
+	"go.uber.org/zap"
 	"math/rand"
 	"net/http"
 	"shop_api/user_web/forms"
 	"strings"
 	"time"
 
-	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
-	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 	"github.com/gin-gonic/gin"
 	"shop_api/user_web/global"
 )
@@ -36,27 +38,33 @@ func SendSms(ctx *gin.Context) {
 		return
 	}
 
-	client, err := dysmsapi.NewClientWithAccessKey("cn-beijing", global.ServerConfig.AliSmsInfo.ApiKey, global.ServerConfig.AliSmsInfo.ApiSecrect)
+	config := sdk.NewConfig()
+	aliSmsInfo := global.ServerConfig.AliSmsInfo
+	smsCode := GenerateSmsCode(6)
+	credential := credentials.NewAccessKeyCredential(aliSmsInfo.ApiKey, aliSmsInfo.ApiSecrect)
+	/* use STS Token
+	credential := credentials.NewStsTokenCredential("<your-access-key-id>", "<your-access-key-secret>", "<your-sts-token>")
+	*/
+	client, err := dysmsapi.NewClientWithOptions(aliSmsInfo.RegionId, config, credential)
 	if err != nil {
 		panic(err)
 	}
-	smsCode := GenerateSmsCode(6)
-	request := requests.NewCommonRequest()
-	request.Method = "POST"
-	request.Scheme = "https" // https | http
-	request.Domain = "dysmsapi.aliyuncs.com"
-	request.Version = "2017-05-25"
-	request.ApiName = "SendSms"
-	request.QueryParams["RegionId"] = "cn-beijing"
-	request.QueryParams["PhoneNumbers"] = sendSmsForm.Mobile            //手机号
-	request.QueryParams["SignName"] = "慕学在线"                            //阿里云验证过的项目名 自己设置
-	request.QueryParams["TemplateCode"] = "SMS_181850725"               //阿里云的短信模板号 自己设置
-	request.QueryParams["TemplateParam"] = "{\"code\":" + smsCode + "}" //短信模板中的验证码内容 自己生成   之前试过直接返回，但是失败，加上code成功。
-	response, err := client.ProcessCommonRequest(request)
-	fmt.Print(client.DoAction(request, response))
+
+	request := dysmsapi.CreateSendSmsRequest()
+
+	request.Scheme = "https"
+
+	request.SignName = aliSmsInfo.SignName               //阿里云验证过的项目名 自己设置
+	request.TemplateCode = aliSmsInfo.TemplateCode       //阿里云的短信模板号 自己设置
+	request.PhoneNumbers = sendSmsForm.Mobile            //手机号
+	request.TemplateParam = "{\"code\":" + smsCode + "}" //短信模板中的验证码内容 自己生成   之前试过直接返回，但是失败，加上code成功。
+
+	response, err := client.SendSms(request)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
+	zap.S().Infof("aliSms response is %#v\n", response)
+
 	//将验证码保存起来 - redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),

@@ -3,6 +3,7 @@ package initialize
 import (
 	"fmt"
 	"github.com/hashicorp/consul/api"
+	_ "github.com/mbobakov/grpc-consul-resolver" // it`s import 负载均衡策略
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -10,13 +11,14 @@ import (
 	"shop_api/user_web/proto"
 )
 
+// InitSrvConn 使用负载均衡——轮询策略
 func InitSrvConn() {
 	consulInfo := global.ServerConfig.ConsulInfo
 	userConn, err := grpc.Dial(
 		fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.UserSrvInfo.Name),
 		// 替换 grpc.WithInsecure(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
+		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`), // 负载均衡策略——轮询
 	)
 	if err != nil {
 		zap.S().Fatal("[InitSrvConn] 连接 【用户服务失败】")
@@ -26,6 +28,7 @@ func InitSrvConn() {
 	global.UserSrvClient = userSrvClient
 }
 
+// InitSrvConn2 未使用负载均衡
 func InitSrvConn2() {
 	//从注册中心获取到用户服务的信息
 	cfg := api.DefaultConfig()

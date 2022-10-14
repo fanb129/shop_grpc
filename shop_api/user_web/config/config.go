@@ -2,8 +2,9 @@ package config
 
 // UserSrvConfig user_srv的配置信息
 type UserSrvConfig struct {
-	Host string `mapstructure:"host" json:"host"`
-	Port int    `mapstructure:"port" json:"port"`
+	// 使用consul服务发现，不再需要host和port
+	//Host string `mapstructure:"host" json:"host"`
+	//Port int    `mapstructure:"port" json:"port"`
 	Name string `mapstructure:"name" json:"name"`
 }
 
@@ -14,8 +15,12 @@ type JWTConfig struct {
 
 // AliSmsConfig 阿里短信服务配置信息
 type AliSmsConfig struct {
-	ApiKey     string `mapstructure:"key" json:"key"`
-	ApiSecrect string `mapstructure:"secrect" json:"secrect"`
+	ApiKey       string `mapstructure:"key" json:"key"`
+	ApiSecrect   string `mapstructure:"secrect" json:"secrect"`
+	TemplateCode string `mapstructure:"template-code" json:"template-code"`
+	SignName     string `mapstructure:"sign-name" json:"sign-name"`
+	RegionId     string `mapstructure:"region-id" json:"region-id"`
+	Width        int    `json:"width"`
 }
 
 // ConsulConfig consul配置信息
@@ -31,7 +36,7 @@ type RedisConfig struct {
 	Expire int    `mapstructure:"expire" json:"expire"`
 }
 
-// ServerConfig 总的服务配置信息
+// ServerConfig 总的服务配置信息 从nacos中读取
 type ServerConfig struct {
 	Name        string        `mapstructure:"name" json:"name"`
 	Host        string        `mapstructure:"host" json:"host"`

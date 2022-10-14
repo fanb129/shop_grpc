@@ -45,6 +45,7 @@ func main() {
 			global.ServerConfig.Port = port
 		}
 	}
+	zap.S().Info(global.ServerConfig)
 
 	//注册验证器
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {

@@ -21,9 +21,9 @@ func GetEnvInfo(env string) bool {
 func InitConfig() {
 	debug := GetEnvInfo("MXSHOP_DEBUG")
 	configFilePrefix := "config"
-	configFileName := fmt.Sprintf("user-web/%s-pro.yaml", configFilePrefix)
+	configFileName := fmt.Sprintf("user_web/%s-pro.yaml", configFilePrefix)
 	if debug {
-		configFileName = fmt.Sprintf("user-web/%s-debug.yaml", configFilePrefix)
+		configFileName = fmt.Sprintf("user_web/%s-debug.yaml", configFilePrefix)
 	}
 
 	v := viper.New()
@@ -33,7 +33,7 @@ func InitConfig() {
 		panic(err)
 	}
 	//这个对象如何在其他文件中使用 - 全局变量
-	if err := v.Unmarshal(global.NacosConfig); err != nil {
+	if err := v.Unmarshal(&global.NacosConfig); err != nil {
 		panic(err)
 	}
 	zap.S().Infof("配置信息: %v", global.NacosConfig)
@@ -79,5 +79,5 @@ func InitConfig() {
 	if err != nil {
 		zap.S().Fatalf("读取nacos配置失败： %s", err.Error())
 	}
-	fmt.Println(&global.ServerConfig)
+	//fmt.Println(&global.ServerConfig)
 }
