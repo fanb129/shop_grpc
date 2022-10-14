@@ -58,7 +58,7 @@ func main() {
 	}
 	// 生成对应的检查对象
 	check := &api.AgentServiceCheck{
-		GRPC:                           fmt.Sprintf("192.168.139.130:%d", *Port),
+		GRPC:                           fmt.Sprintf("%s:%d", global.ServerConfig.Host, *Port),
 		Timeout:                        "5s",
 		Interval:                       "5s",
 		DeregisterCriticalServiceAfter: "15s",
@@ -70,8 +70,8 @@ func main() {
 	serviceID := fmt.Sprintf("%s", uuid.NewV4())
 	registration.ID = serviceID
 	registration.Port = *Port
-	registration.Tags = []string{"user", "srv"}
-	registration.Address = "192.168.139.130"
+	registration.Tags = global.ServerConfig.Tags
+	registration.Address = global.ServerConfig.Host
 	registration.Check = check
 	//1. 如何启动两个服务
 	//2. 即使我能够通过终端启动两个服务，但是注册到consul中的时候也会被覆盖
