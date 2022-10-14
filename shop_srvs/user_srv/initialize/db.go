@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"shop_srvs/user_srv/global"
+	"shop_srvs/user_srv/model"
 	"time"
 )
 
@@ -19,9 +20,9 @@ func InitDB() {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold: time.Second,   // 满SQL阈值
-			LogLevel:      logger.Silent, // log level
-			Colorful:      true,          // 禁用彩色打印
+			SlowThreshold: time.Second, // 满SQL阈值
+			LogLevel:      logger.Info, // log level
+			Colorful:      true,        // 禁用彩色打印
 		},
 	)
 
@@ -36,4 +37,7 @@ func InitDB() {
 	if err != nil {
 		panic(err)
 	}
+
+	// 导入表
+	_ = global.DB.AutoMigrate(&model.User{})
 }
