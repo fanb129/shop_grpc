@@ -1,5 +1,7 @@
 /.idea
 /shop_srvs/.idea
+/shop_srvs/tmp
+/shop_api/tmp
 # Binaries for programs and plugins
 *.exe
 *.exe~
