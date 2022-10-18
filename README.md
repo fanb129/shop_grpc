@@ -1,6 +1,3 @@
-# shop_grpc
-商城项目-grpc框架
-
 # shop项目所需的中间件
 
 ## 1. redis
@@ -49,12 +46,14 @@ web控制台：[http://192.168.139.130:8848/nacos/index.html](http://192.168.139
 
 密码nacos
 
-### 1. user_srv.json
+### （1）user
+
+#### ①. user_srv.json
 
 ```json
 {
     "name":"user_srv",
-    "host":"192.168.139.130",
+    "host":"192.168.1.105",
     "tags":[ "user", "srv" ],
     "mysql":{
         "host":"192.168.139.130",
@@ -69,12 +68,13 @@ web控制台：[http://192.168.139.130:8848/nacos/index.html](http://192.168.139
     }
 }
 ```
-### 2. user_web.json
+
+#### ② user_web.json
 
 ```json
 {
     "name":"user_web",
-    "host":"192.168.139.130",
+    "host":"192.168.1.105",
     "tags":[ "user", "web" ],
     "port":8081,
     "user_srv":{
@@ -100,3 +100,31 @@ web控制台：[http://192.168.139.130:8848/nacos/index.html](http://192.168.139
     }
 }
 ```
+
+### （2）goods
+
+#### ③ oss_web.json
+
+```json
+{
+    "name":"oss_web",
+    "host":"192.168.1.105",
+    "tags":["oss","web"],
+    "port":8083,
+    "jwt":{
+        "key":"fanb"
+    },
+    "consul":{
+        "host":"192.168.139.130",
+        "port":8500
+    },
+    "oss":{
+        "key":"xxx",
+        "secret":"xxx",
+        "host":"http://xxx.aliyuncs.com",
+        "callback_url":"http://jt2gxw.natappfree.cc/oss/v1/oss/callback", // 内网穿透地址
+        "upload_dir":"goods/"
+    }
+}
+```
+
