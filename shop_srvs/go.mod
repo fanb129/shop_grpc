@@ -6,6 +6,7 @@ require (
 	github.com/anaskhan96/go-password-encoder v0.0.0-20201010210601-c765b799fd72
 	github.com/hashicorp/consul/api v1.12.0
 	github.com/nacos-group/nacos-sdk-go v1.1.2
+	github.com/olivere/elastic/v7 v7.0.32
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/viper v1.13.0
 	go.uber.org/zap v1.17.0
@@ -34,9 +35,11 @@ require (
 	github.com/hashicorp/serf v0.9.7 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
+	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
