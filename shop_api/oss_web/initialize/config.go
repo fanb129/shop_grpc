@@ -21,7 +21,7 @@ func GetEnvInfo(env string) bool {
 }
 
 func InitConfig() {
-	debug := GetEnvInfo("MXSHOP_DEBUG")
+	debug := GetEnvInfo("SHOP_DEBUG")
 	configFilePrefix := "config"
 	configFileName := fmt.Sprintf("oss_web/%s-pro.yaml", configFilePrefix)
 	if debug {

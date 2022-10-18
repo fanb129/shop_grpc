@@ -30,7 +30,7 @@ func main() {
 
 	viper.AutomaticEnv()
 	//如果是本地开发环境端口号固定，线上环境启动获取端口号
-	debug := viper.GetBool("MXSHOP_DEBUG")
+	debug := viper.GetBool("SHOP_DEBUG")
 	if !debug {
 		port, err := utils.GetFreePort()
 		if err == nil {
