@@ -1,4 +1,4 @@
-# shop项目所需的中间件
+# 一、shop项目所需的中间件
 
 ## 1. redis
 
@@ -46,9 +46,11 @@ web控制台：[http://192.168.139.130:8848/nacos/index.html](http://192.168.139
 
 密码nacos
 
-### （1）user
+# 二、nacos中配置文件
 
-#### ①. user_srv.json
+## 1. user
+
+### （1）user_srv.json
 
 ```json
 {
@@ -69,7 +71,7 @@ web控制台：[http://192.168.139.130:8848/nacos/index.html](http://192.168.139
 }
 ```
 
-#### ② user_web.json
+### （2）user_web.json
 
 ```json
 {
@@ -101,9 +103,60 @@ web控制台：[http://192.168.139.130:8848/nacos/index.html](http://192.168.139
 }
 ```
 
-### （2）goods
+## 2. goods
 
-#### ③ oss_web.json
+### （1）goods_srv.json
+
+```json
+{
+    "name":"goods_srv",
+    "host":"192.168.1.105",
+    "tags":[ "goods", "srv" ],
+    "mysql":{
+        "host":"192.168.139.130",
+        "port":3306,
+        "db":"shop_goods",
+        "user":"root",
+        "password":"shop123456"
+    },
+    "consul":{
+        "host":"192.168.139.130",
+        "port":8500
+    },
+    "es":{
+        "host":"192.168.139.130",
+        "port":9200
+    }
+}
+```
+
+### （2）goods_web.json
+
+```json
+{
+    "name":"goods_web",
+    "host":"192.168.1.105",
+    "tags":[ "goods", "web" ],
+    "port":8082,
+    "goods_srv":{
+        "name":"goods_srv"
+    },
+    "jwt":{
+        "key":"fanb"
+    },
+    "consul":{
+        "host":"192.168.139.130",
+        "port":8500
+    },
+    "jaeger":{
+        "host":"192.168.139.130",
+        "port":5775,
+        "name":""
+    }
+}
+```
+
+### （3）oss_web.json
 
 ```json
 {
@@ -122,9 +175,34 @@ web控制台：[http://192.168.139.130:8848/nacos/index.html](http://192.168.139
         "key":"xxx",
         "secret":"xxx",
         "host":"http://xxx.aliyuncs.com",
-        "callback_url":"http://jt2gxw.natappfree.cc/oss/v1/oss/callback", // 内网穿透地址
+        "callback_url":"http://jt2gxw.natappfree.cc/oss/v1/oss/callback",
         "upload_dir":"goods/"
     }
 }
 ```
 
+## 3. inventory
+
+### （1）inventory_srv.json
+```json
+{
+    "name":"inventory_srv",
+    "host":"192.168.1.111",
+    "tags":[ "inventory", "srv" ],
+    "mysql":{
+        "host":"192.168.139.130",
+        "port":3306,
+        "db":"shop_inventory",
+        "user":"root",
+        "password":"shop123456"
+    },
+    "redis":{
+        "host":"192.168.139.130",
+        "port":6379
+    },
+    "consul":{
+        "host":"192.168.139.130",
+        "port":8500
+    }
+}
+```
