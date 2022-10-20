@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/hashicorp/consul/api"
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -17,6 +16,7 @@ import (
 	"shop_srvs/user_srv/initialize"
 	"shop_srvs/user_srv/proto"
 	"shop_srvs/user_srv/utils"
+	"shop_srvs/user_srv/utils/register/consul"
 	"syscall"
 )
 
@@ -49,37 +49,45 @@ func main() {
 	grpc_health_v1.RegisterHealthServer(server, health.NewServer())
 
 	// consul服务注册
-	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("%s:%d", global.ServerConfig.ConsulInfo.Host, global.ServerConfig.ConsulInfo.Port)
-
-	client, err := api.NewClient(config)
-	if err != nil {
-		panic(err)
-	}
-	// 生成对应的检查对象
-	check := &api.AgentServiceCheck{
-		GRPC:                           fmt.Sprintf("%s:%d", global.ServerConfig.Host, *Port),
-		Timeout:                        "5s",
-		Interval:                       "5s",
-		DeregisterCriticalServiceAfter: "15s",
-	}
-
-	// 生成注册对象
-	registration := new(api.AgentServiceRegistration)
-	registration.Name = global.ServerConfig.Name
-	serviceID := fmt.Sprintf("%s", uuid.NewV4())
-	registration.ID = serviceID
-	registration.Port = *Port
-	registration.Tags = global.ServerConfig.Tags
-	registration.Address = global.ServerConfig.Host
-	registration.Check = check
+	//config := api.DefaultConfig()
+	//config.Address = fmt.Sprintf("%s:%d", global.ServerConfig.ConsulInfo.Host, global.ServerConfig.ConsulInfo.Port)
+	//
+	//client, err := api.NewClient(config)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//// 生成对应的检查对象
+	//check := &api.AgentServiceCheck{
+	//	GRPC:                           fmt.Sprintf("%s:%d", global.ServerConfig.Host, *Port),
+	//	Timeout:                        "5s",
+	//	Interval:                       "5s",
+	//	DeregisterCriticalServiceAfter: "15s",
+	//}
+	//
+	//// 生成注册对象
+	//registration := new(api.AgentServiceRegistration)
+	//registration.Name = global.ServerConfig.Name
+	//serviceID := fmt.Sprintf("%s", uuid.NewV4())
+	//registration.ID = serviceID
+	//registration.Port = *Port
+	//registration.Tags = global.ServerConfig.Tags
+	//registration.Address = global.ServerConfig.Host
+	//registration.Check = check
 	//1. 如何启动两个服务
 	//2. 即使我能够通过终端启动两个服务，但是注册到consul中的时候也会被覆盖
-	err = client.Agent().ServiceRegister(registration)
-	if err != nil {
-		panic(err)
-	}
+	//err = client.Agent().ServiceRegister(registration)
+	//if err != nil {
+	//	panic(err)
+	//}
 
+	// 封装之后consul服务注册
+	registryClient := consul.NewRegistryClient(global.ServerConfig.ConsulInfo.Host, global.ServerConfig.ConsulInfo.Port)
+	serviceId := fmt.Sprintf("%s", uuid.NewV4())
+	err = registryClient.Register(global.ServerConfig.Host, *Port, global.ServerConfig.Name, global.ServerConfig.Tags, serviceId)
+	if err != nil {
+		zap.S().Panic("服务注册失败:", err.Error())
+	}
+	zap.S().Debugf("启动服务器, 端口： %d", *Port)
 	go func() {
 		err = server.Serve(listen)
 		if err != nil {
@@ -91,7 +99,12 @@ func main() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	if err = client.Agent().ServiceDeregister(serviceID); err != nil {
+	//if err = registryClient.Agent().ServiceDeregister(serviceID); err != nil {
+	//	zap.S().Info("注销失败")
+	//}
+
+	// 封装之后服务注销
+	if err = registryClient.DeRegister(serviceId); err != nil {
 		zap.S().Info("注销失败")
 	}
 	zap.S().Info("注销成功")
