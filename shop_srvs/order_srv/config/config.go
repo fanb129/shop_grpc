@@ -16,13 +16,18 @@ type ConsulConfig struct {
 	Host string `mapstructure:"host" json:"host"`
 	Port int    `mapstructure:"port" json:"port"`
 }
+type RocketMq struct {
+	Host string `mapstructure:"host" json:"host"`
+	Port int    `mapstructure:"port" json:"port"`
+}
 
 type ServerConfig struct {
-	Name       string       `mapstructure:"name" json:"name"`
-	Host       string       `mapstructure:"host" json:"host"`
-	Tags       []string     `mapstructure:"tags" json:"tags"`
-	MysqlInfo  MysqlConfig  `mapstructure:"mysql" json:"mysql"`
-	ConsulInfo ConsulConfig `mapstructure:"consul" json:"consul"`
+	Name         string       `mapstructure:"name" json:"name"`
+	Host         string       `mapstructure:"host" json:"host"`
+	Tags         []string     `mapstructure:"tags" json:"tags"`
+	MysqlInfo    MysqlConfig  `mapstructure:"mysql" json:"mysql"`
+	ConsulInfo   ConsulConfig `mapstructure:"consul" json:"consul"`
+	RocketMqInfo RocketMq     `mapstructure:"rocketmq" json:"rocketmq"`
 
 	//商品微服务的配置
 	GoodsSrvInfo GoodsSrvConfig `mapstructure:"goods_srv" json:"goods_srv"`

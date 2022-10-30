@@ -33,21 +33,24 @@ type Inventory struct {
 	Version int32 `gorm:"type:int"` //分布式锁的乐观锁
 }
 
-type InventoryNew struct {
-	BaseModel
-	Goods   int32 `gorm:"type:int;index"`
-	Stocks  int32 `gorm:"type:int"`
-	Version int32 `gorm:"type:int"` //分布式锁的乐观锁
-	Freeze  int32 `gorm:"type:int"` //冻结库存
-}
+// 用于测试tcc
+//type InventoryNew struct {
+//	BaseModel
+//	Goods   int32 `gorm:"type:int;index"`
+//	Stocks  int32 `gorm:"type:int"`
+//	Version int32 `gorm:"type:int"` //分布式锁的乐观锁
+//	Freeze  int32 `gorm:"type:int"` //冻结库存
+//}
 
-type Delivery struct {
-	Goods   int32  `gorm:"type:int;index"`
-	Nums    int32  `gorm:"type:int"`
-	OrderSn string `gorm:"type:varchar(200)"`
-	Status  string `gorm:"type:varchar(200)"` //1. 表示等待支付 2. 表示支付成功 3. 失败
-}
+// 用于测试tcc
+//type Delivery struct {
+//	Goods   int32  `gorm:"type:int;index"`
+//	Nums    int32  `gorm:"type:int"`
+//	OrderSn string `gorm:"type:varchar(200)"`
+//	Status  string `gorm:"type:varchar(200)"` //1. 表示等待支付 2. 表示支付成功 3. 失败
+//}
 
+// StockSellDetail 记录库存归还情况，避免多次归还，实现幂等性
 type StockSellDetail struct {
 	OrderSn string          `gorm:"type:varchar(200);index:idx_order_sn,unique;"`
 	Status  int32           `gorm:"type:varchar(200)"` //1 表示已扣减 2. 表示已归还

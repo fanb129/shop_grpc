@@ -1,27 +1,18 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"io"
 	"log"
 	"os"
 	"shop_srvs/order_srv/model"
 	"time"
 )
 
-func genMd5(code string) string {
-	Md5 := md5.New()
-	_, _ = io.WriteString(Md5, code)
-	return hex.EncodeToString(Md5.Sum(nil))
-}
-
 func main() {
-	dsn := "root:root@tcp(192.168.0.104:3306)/mxshop_order_srv?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:shop123456@tcp(192.168.139.130:3306)/shop_order?charset=utf8mb4&parseTime=True&loc=Local"
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer

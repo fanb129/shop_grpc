@@ -70,8 +70,8 @@ func main() {
 
 	//监听库存归还topic
 	c, _ := rocketmq.NewPushConsumer(
-		consumer.WithNameServer([]string{"192.168.0.104:9876"}),
-		consumer.WithGroupName("mxshop-inventory"),
+		consumer.WithNameServer([]string{"192.168.139.130:9876"}),
+		consumer.WithGroupName("shop-inventory"),
 	)
 
 	if err := c.Subscribe("order_reback", consumer.MessageSelector{}, handler.AutoReback); err != nil {

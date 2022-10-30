@@ -94,8 +94,8 @@ func main() {
 
 	//监听订单超时topic
 	c, _ := rocketmq.NewPushConsumer(
-		consumer.WithNameServer([]string{"192.168.0.104:9876"}),
-		consumer.WithGroupName("mxshop-order"),
+		consumer.WithNameServer([]string{"192.168.139.130:9876"}),
+		consumer.WithGroupName("shop-order"),
 	)
 
 	if err := c.Subscribe("order_timeout", consumer.MessageSelector{}, handler.OrderTimeout); err != nil {

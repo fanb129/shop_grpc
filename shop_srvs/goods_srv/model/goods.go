@@ -79,6 +79,7 @@ type Goods struct {
 	GoodsFrontImage string   `gorm:"type:varchar(200);not null"`
 }
 
+// AfterCreate 添加商品后加入es
 func (g *Goods) AfterCreate(tx *gorm.DB) (err error) {
 	esModel := EsGoods{
 		ID:          g.ID,
@@ -104,6 +105,7 @@ func (g *Goods) AfterCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+// AfterUpdate 更新商品后更新es
 func (g *Goods) AfterUpdate(tx *gorm.DB) (err error) {
 	esModel := EsGoods{
 		ID:          g.ID,
@@ -130,6 +132,7 @@ func (g *Goods) AfterUpdate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+// AfterDelete 删除商品后删除es
 func (g *Goods) AfterDelete(tx *gorm.DB) (err error) {
 	_, err = global.EsClient.Delete().Index(EsGoods{}.GetIndexName()).Id(strconv.Itoa(int(g.ID))).Do(context.Background())
 	if err != nil {

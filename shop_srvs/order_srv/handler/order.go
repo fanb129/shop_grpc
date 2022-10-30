@@ -40,73 +40,6 @@ func GenerateOrderSn(userId int32) string {
 	return orderSn
 }
 
-// CartItemList 获取用户的购物车列表
-func (*OrderServer) CartItemList(ctx context.Context, req *proto.UserInfo) (*proto.CartItemListResponse, error) {
-	var shopCarts []model.ShoppingCart
-	var rsp proto.CartItemListResponse
-
-	if result := global.DB.Where(&model.ShoppingCart{User: req.Id}).Find(&shopCarts); result.Error != nil {
-		return nil, result.Error
-	} else {
-		rsp.Total = int32(result.RowsAffected)
-	}
-
-	for _, shopCart := range shopCarts {
-		rsp.Data = append(rsp.Data, &proto.ShopCartInfoResponse{
-			Id:      shopCart.ID,
-			UserId:  shopCart.User,
-			GoodsId: shopCart.Goods,
-			Nums:    shopCart.Nums,
-			Checked: shopCart.Checked,
-		})
-	}
-	return &rsp, nil
-}
-
-// CreateCartItem 将商品添加到购物车 1. 购物车中原本没有这件商品 - 新建一个记录 2. 这个商品之前添加到了购物车- 合并
-func (*OrderServer) CreateCartItem(ctx context.Context, req *proto.CartItemRequest) (*proto.ShopCartInfoResponse, error) {
-	var shopCart model.ShoppingCart
-
-	if result := global.DB.Where(&model.ShoppingCart{Goods: req.GoodsId, User: req.UserId}).First(&shopCart); result.RowsAffected == 1 {
-		//如果记录已经存在，则合并购物车记录, 更新操作
-		shopCart.Nums += req.Nums
-	} else {
-		//插入操作
-		shopCart.User = req.UserId
-		shopCart.Goods = req.GoodsId
-		shopCart.Nums = req.Nums
-		shopCart.Checked = false
-	}
-
-	global.DB.Save(&shopCart)
-	return &proto.ShopCartInfoResponse{Id: shopCart.ID}, nil
-}
-
-// UpdateCartItem 更新购物车记录，更新数量和选中状态
-func (*OrderServer) UpdateCartItem(ctx context.Context, req *proto.CartItemRequest) (*emptypb.Empty, error) {
-	var shopCart model.ShoppingCart
-
-	if result := global.DB.Where("goods=? and user=?", req.GoodsId, req.UserId).First(&shopCart); result.RowsAffected == 0 {
-		return nil, status.Errorf(codes.NotFound, "购物车记录不存在")
-	}
-
-	shopCart.Checked = req.Checked
-	if req.Nums > 0 {
-		shopCart.Nums = req.Nums
-	}
-	global.DB.Save(&shopCart)
-
-	return &emptypb.Empty{}, nil
-}
-
-// DeleteCartItem 删除购物车中指定商品
-func (*OrderServer) DeleteCartItem(ctx context.Context, req *proto.CartItemRequest) (*emptypb.Empty, error) {
-	if result := global.DB.Where("goods=? and user=?", req.GoodsId, req.UserId).Delete(&model.ShoppingCart{}); result.RowsAffected == 0 {
-		return nil, status.Errorf(codes.NotFound, "购物车记录不存在")
-	}
-	return &emptypb.Empty{}, nil
-}
-
 // OrderList 获取订单列表
 func (*OrderServer) OrderList(ctx context.Context, req *proto.OrderFilterRequest) (*proto.OrderListResponse, error) {
 	var orders []model.OrderInfo
@@ -195,6 +128,7 @@ func (o *OrderListener) ExecuteLocalTransaction(msg *primitive.Message) primitiv
 	var goodsIds []int32
 	var shopCarts []model.ShoppingCart
 	goodsNumsMap := make(map[int32]int32)
+	// 链路追踪
 	shopCartSpan := opentracing.GlobalTracer().StartSpan("select_shopcart", opentracing.ChildOf(parentSpan.Context()))
 	if result := global.DB.Where(&model.ShoppingCart{User: orderInfo.User, Checked: true}).Find(&shopCarts); result.RowsAffected == 0 {
 		o.Code = codes.InvalidArgument
@@ -293,7 +227,7 @@ func (o *OrderListener) ExecuteLocalTransaction(msg *primitive.Message) primitiv
 	deleteShopCartSpan.Finish()
 
 	//发送延时消息
-	p, err := rocketmq.NewProducer(producer.WithNameServer([]string{"192.168.0.104:9876"}))
+	p, err := rocketmq.NewProducer(producer.WithNameServer([]string{"192.168.139.130:9876"}))
 	if err != nil {
 		panic("生成producer失败")
 	}
@@ -304,7 +238,7 @@ func (o *OrderListener) ExecuteLocalTransaction(msg *primitive.Message) primitiv
 	}
 
 	msg = primitive.NewMessage("order_timeout", msg.Body)
-	msg.WithDelayTimeLevel(3)
+	msg.WithDelayTimeLevel(3) // 1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h
 	_, err = p.SendSync(context.Background(), msg)
 	if err != nil {
 		zap.S().Errorf("发送延时消息失败: %v\n", err)
@@ -346,7 +280,7 @@ func (*OrderServer) CreateOrder(ctx context.Context, req *proto.OrderRequest) (*
 	orderListener := OrderListener{Ctx: ctx}
 	p, err := rocketmq.NewTransactionProducer(
 		&orderListener,
-		producer.WithNameServer([]string{"192.168.0.104:9876"}),
+		producer.WithNameServer([]string{fmt.Sprintf("%s:%d", global.ServerConfig.RocketMqInfo.Host, global.ServerConfig.RocketMqInfo.Port)}),
 	)
 	if err != nil {
 		zap.S().Errorf("生成producer失败: %s", err.Error())
@@ -369,6 +303,7 @@ func (*OrderServer) CreateOrder(ctx context.Context, req *proto.OrderRequest) (*
 	//应该在消息中具体指明一个订单的具体的商品的扣减情况
 	jsonString, _ := json.Marshal(order)
 
+	// 发送事物消息
 	_, err = p.SendMessageInTransaction(context.Background(),
 		primitive.NewMessage("order_reback", jsonString))
 	if err != nil {
@@ -390,6 +325,7 @@ func (*OrderServer) UpdateOrderStatus(ctx context.Context, req *proto.OrderStatu
 	return &emptypb.Empty{}, nil
 }
 
+// OrderTimeout 接收延迟消息后，判断订单是否超时
 func OrderTimeout(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
 
 	for i := range msgs {
@@ -409,7 +345,7 @@ func OrderTimeout(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.
 			order.Status = "TRADE_CLOSED"
 			tx.Save(&order)
 
-			p, err := rocketmq.NewProducer(producer.WithNameServer([]string{"192.168.0.104:9876"}))
+			p, err := rocketmq.NewProducer(producer.WithNameServer([]string{fmt.Sprintf("%s:%d", global.ServerConfig.RocketMqInfo.Host, global.ServerConfig.RocketMqInfo.Port)}))
 			if err != nil {
 				panic("生成producer失败")
 			}
@@ -418,6 +354,7 @@ func OrderTimeout(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.
 				panic("启动producer失败")
 			}
 
+			// 发送普通消息，库存归还
 			_, err = p.SendSync(context.Background(), primitive.NewMessage("order_reback", msgs[i].Body))
 			if err != nil {
 				tx.Rollback()
