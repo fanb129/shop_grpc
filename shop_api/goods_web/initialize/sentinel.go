@@ -18,7 +18,7 @@ func InitSentinel() {
 		{
 			Resource:               "goods-list",
 			TokenCalculateStrategy: flow.Direct,
-			ControlBehavior:        flow.Reject, //匀速通过
+			ControlBehavior:        flow.Reject, //直接拒绝
 			Threshold:              20,          //100ms只能就已经来了1W的并发， 1s就是10W的并发
 			StatIntervalInMs:       6000,
 		},

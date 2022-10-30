@@ -9,7 +9,8 @@ import (
 )
 
 func InitOrderRouter(Router *gin.RouterGroup) {
-	OrderRouter := Router.Group("orders").Use(middlewares.JWTAuth()).Use(middlewares.Trace())
+	OrderRouter := Router.Group("orders").Use(middlewares.JWTAuth())
+	//.Use(middlewares.Trace())
 	{
 		OrderRouter.GET("", order.List)       // 订单列表
 		OrderRouter.POST("", order.New)       // 新建订单

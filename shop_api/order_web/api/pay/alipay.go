@@ -3,6 +3,7 @@ package pay
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/smartwalle/alipay/v3"
 	"go.uber.org/zap"
 	"net/http"
 	"shop_api/order_web/proto"
@@ -20,7 +21,7 @@ func Notify(ctx *gin.Context) {
 		})
 		return
 	}
-	err = client.LoadAliPayPublicKey((global.ServerConfig.AliPayInfo.AliPublicKey))
+	err = client.LoadAliPayPublicKey(global.ServerConfig.AliPayInfo.AliPublicKey)
 	if err != nil {
 		zap.S().Errorw("加载支付宝的公钥失败")
 		ctx.JSON(http.StatusInternalServerError, gin.H{

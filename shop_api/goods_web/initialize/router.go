@@ -19,7 +19,7 @@ func Routers() *gin.Engine {
 	//配置跨域
 	Router.Use(middlewares.Cors())
 	//添加链路追踪
-	ApiGroup := Router.Group("/g/v1")
+	ApiGroup := Router.Group("/v1")
 	router.InitGoodsRouter(ApiGroup)
 	router.InitCategoryRouter(ApiGroup)
 	router.InitBannerRouter(ApiGroup)

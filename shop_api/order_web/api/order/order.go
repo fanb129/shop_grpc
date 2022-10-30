@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/smartwalle/alipay/v3"
 	"go.uber.org/zap"
 	"net/http"
 	"shop_api/order_web/forms"
@@ -83,6 +84,7 @@ func List(ctx *gin.Context) {
 }
 
 //链路的起点在哪里 http请求
+
 func New(ctx *gin.Context) {
 	orderForm := forms.CreateOrderForm{}
 	if err := ctx.ShouldBindJSON(&orderForm); err != nil {
@@ -111,7 +113,7 @@ func New(ctx *gin.Context) {
 		})
 		return
 	}
-	err = client.LoadAliPayPublicKey((global.ServerConfig.AliPayInfo.AliPublicKey))
+	err = client.LoadAliPayPublicKey(global.ServerConfig.AliPayInfo.AliPublicKey)
 	if err != nil {
 		zap.S().Errorw("加载支付宝的公钥失败")
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -123,7 +125,7 @@ func New(ctx *gin.Context) {
 	var p = alipay.TradePagePay{}
 	p.NotifyURL = global.ServerConfig.AliPayInfo.NotifyURL
 	p.ReturnURL = global.ServerConfig.AliPayInfo.ReturnURL
-	p.Subject = "慕学生鲜订单-" + rsp.OrderSn
+	p.Subject = "shop项目订单-" + rsp.OrderSn
 	p.OutTradeNo = rsp.OrderSn
 	p.TotalAmount = strconv.FormatFloat(float64(rsp.Total), 'f', 2, 64)
 	p.ProductCode = "FAST_INSTANT_TRADE_PAY"
@@ -205,7 +207,7 @@ func Detail(ctx *gin.Context) {
 		})
 		return
 	}
-	err = client.LoadAliPayPublicKey((global.ServerConfig.AliPayInfo.AliPublicKey))
+	err = client.LoadAliPayPublicKey(global.ServerConfig.AliPayInfo.AliPublicKey)
 	if err != nil {
 		zap.S().Errorw("加载支付宝的公钥失败")
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -217,7 +219,7 @@ func Detail(ctx *gin.Context) {
 	var p = alipay.TradePagePay{}
 	p.NotifyURL = global.ServerConfig.AliPayInfo.NotifyURL
 	p.ReturnURL = global.ServerConfig.AliPayInfo.ReturnURL
-	p.Subject = "慕学生鲜订单-" + rsp.OrderInfo.OrderSn
+	p.Subject = "shop项目订单-" + rsp.OrderInfo.OrderSn
 	p.OutTradeNo = rsp.OrderInfo.OrderSn
 	p.TotalAmount = strconv.FormatFloat(float64(rsp.OrderInfo.Total), 'f', 2, 64)
 	p.ProductCode = "FAST_INSTANT_TRADE_PAY"

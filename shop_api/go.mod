@@ -19,6 +19,7 @@ require (
 	github.com/nacos-group/nacos-sdk-go v1.1.2
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/satori/go.uuid v1.2.0
+	github.com/smartwalle/alipay/v3 v3.1.8
 	github.com/spf13/viper v1.13.0
 	github.com/stretchr/testify v1.8.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
@@ -75,6 +76,7 @@ require (
 	github.com/prometheus/common v0.15.0 // indirect
 	github.com/prometheus/procfs v0.2.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.21.6 // indirect
+	github.com/smartwalle/crypto4go v1.0.2 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

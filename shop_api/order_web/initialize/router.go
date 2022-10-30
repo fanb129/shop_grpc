@@ -19,7 +19,7 @@ func Routers() *gin.Engine {
 	//配置跨域
 	Router.Use(middlewares.Cors())
 
-	ApiGroup := Router.Group("/o/v1")
+	ApiGroup := Router.Group("/v1")
 	router.InitOrderRouter(ApiGroup)
 	router.InitShopCartRouter(ApiGroup)
 
