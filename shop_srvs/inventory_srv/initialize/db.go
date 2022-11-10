@@ -38,5 +38,5 @@ func InitDB() {
 	if err != nil {
 		panic(err)
 	}
-	_ = global.DB.AutoMigrate(&model.Inventory{})
+	_ = global.DB.AutoMigrate(&model.Inventory{}, &model.StockSellDetail{})
 }

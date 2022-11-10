@@ -1,6 +1,6 @@
-host: '192.168.139.130'
+host: '39.98.32.219'
 port: 8848
-namespace: '5c57c997-8a6a-40f0-9c46-f1cecd8c55b8'
+namespace: '92a4ba05-6a12-45e2-9929-54e3f4010831'
 user: 'nacos'
 password: 'nacos'
 dataid: 'order_web.json'

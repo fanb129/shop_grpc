@@ -55,9 +55,9 @@ func main() {
 		},
 		Reporter: &jaegercfg.ReporterConfig{
 			LogSpans:           true,
-			LocalAgentHostPort: "192.168.0.104:6831",
+			LocalAgentHostPort: "39.98.32.219:6831",
 		},
-		ServiceName: "mxshop",
+		ServiceName: "shop_grpc",
 	}
 
 	tracer, closer, err := cfg.NewTracer(jaegercfg.Logger(jaeger.StdLogger))
@@ -94,7 +94,7 @@ func main() {
 
 	//监听订单超时topic
 	c, _ := rocketmq.NewPushConsumer(
-		consumer.WithNameServer([]string{"192.168.139.130:9876"}),
+		consumer.WithNameServer([]string{fmt.Sprintf("%s:%d", global.ServerConfig.RocketMqInfo.Host, global.ServerConfig.RocketMqInfo.Port)}),
 		consumer.WithGroupName("shop-order"),
 	)
 

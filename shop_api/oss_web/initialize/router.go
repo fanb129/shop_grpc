@@ -32,6 +32,7 @@ func Routers() *gin.Engine {
 	//配置跨域
 	Router.Use(middlewares.Cors())
 
+	//ApiGroup := Router.Group("/oss/v1")
 	ApiGroup := Router.Group("/v1")
 	router.InitOssRouter(ApiGroup)
 

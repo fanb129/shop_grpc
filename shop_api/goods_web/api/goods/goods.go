@@ -142,6 +142,14 @@ func New(ctx *gin.Context) {
 
 	//如何设置库存
 	//TODO 商品的库存 - 分布式事务
+	_, err = global.InventorySrvClient.SetInv(context.Background(), &proto.GoodsInvInfo{
+		GoodsId: rsp.Id,
+		Num:     goodsForm.Stocks,
+	})
+	if err != nil {
+		api.HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
 	ctx.JSON(http.StatusOK, rsp)
 }
 
@@ -263,6 +271,15 @@ func Update(ctx *gin.Context) {
 		CategoryId:      goodsForm.CategoryId,
 		BrandId:         goodsForm.Brand,
 	}); err != nil {
+		api.HandleGrpcErrorToHttp(err, ctx)
+		return
+	}
+	// TODO: 分布式事务
+	_, err = global.InventorySrvClient.SetInv(context.Background(), &proto.GoodsInvInfo{
+		GoodsId: int32(i),
+		Num:     goodsForm.Stocks,
+	})
+	if err != nil {
 		api.HandleGrpcErrorToHttp(err, ctx)
 		return
 	}

@@ -73,9 +73,9 @@ func PassWordLogin(c *gin.Context) {
 	}
 
 	// 验证验证码
-	if store.Verify(passwordLoginForm.CaptchaId, passwordLoginForm.Captcha, false) {
+	if !store.Verify(passwordLoginForm.CaptchaId, passwordLoginForm.Captcha, false) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"captcha": "验证码错误",
+			"msg": "验证码错误",
 		})
 		return
 	}
@@ -159,13 +159,13 @@ func Register(c *gin.Context) {
 	value, err := rdb.Get(context.Background(), registerForm.Mobile).Result()
 	if err == redis.Nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code": "验证码错误",
+			"msg": "验证码错误",
 		})
 		return
 	} else {
 		if value != registerForm.Code {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "验证码错误",
+				"msg": "验证码错误",
 			})
 			return
 		}

@@ -1,6 +1,6 @@
-host: '192.168.139.130'
-port: 8849
-namespace: 'c10ba738-b147-4c41-9517-6d539c021688'
+host: '39.98.32.219'
+port: 8848
+namespace: 'bec10717-7906-4153-a3d9-d951da64d910'
 user: 'nacos'
 password: 'nacos'
 dataid: 'userop_web.json'

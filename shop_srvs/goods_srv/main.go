@@ -1,4 +1,4 @@
-package goods_srv
+package main
 
 import (
 	"flag"
@@ -28,7 +28,7 @@ func main() {
 	initialize.InitLogger()
 	initialize.InitConfig()
 	initialize.InitDB()
-	//initialize.InitEs()
+	initialize.InitEs()
 	zap.S().Info(global.ServerConfig)
 
 	flag.Parse()

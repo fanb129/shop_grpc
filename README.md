@@ -104,8 +104,8 @@ docker run --name shop_es --restart=always -p 9200:9200 -p 9300:9300 -e "discove
 > 注意！kibana的版本号需要和es版本号一致
 
 ```bash
-# docker run --name shop_kibana --restart=always -e ELASTICSEARCH_HOSTS=http://自己的IP地址:9200 -p 5601:5601 -d kibana:7.17.6
-[root@go ~]# docker run --name shop_kibana -e ELASTICSEARCH_HOSTS=http:192.168.139.130:9200 -p 5601:5601 -d kibana:7.17.6
+# docker run --name shop_kibana --restart=always -e ELASTICSEARCH_HOSTS=http:自己的IP地址:9200 -p 5601:5601 -d kibana:7.17.6
+[root@go ~]# docker run --name shop_kibana --restart=always -e ELASTICSEARCH_HOSTS=http:192.168.139.130:9200 -p 5601:5601 -d kibana:7.17.6
 ```
 
 **浏览器输入`ip:5601`进入web控制台**

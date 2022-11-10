@@ -12,7 +12,7 @@ import (
 
 func main() {
 	c, _ := rocketmq.NewPushConsumer(
-		consumer.WithNameServer([]string{"192.168.0.104:9876"}),
+		consumer.WithNameServer([]string{"39.98.32.219:9876"}),
 		consumer.WithGroupName("mxshop"),
 	)
 

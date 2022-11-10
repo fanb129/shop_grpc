@@ -27,7 +27,7 @@ function send_request()
     if (xmlhttp!=null)
     {
         // serverUrl是 用户获取 '签名和Policy' 等信息的应用服务器的URL，请将下面的IP和Port配置为您自己的真实信息。
-        serverUrl = 'http://127.0.0.1:8083/oss/v1/oss/token'
+        serverUrl = 'http://39.98.32.219:8083/oss/v1/oss/token'
 		
         xmlhttp.open( "GET", serverUrl, false );
         xmlhttp.send( null );

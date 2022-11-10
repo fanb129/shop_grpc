@@ -1,6 +1,6 @@
-host: '192.168.139.130'
+host: '39.98.32.219'
 port: 8848
-namespace: '4b98f01d-fe60-44a1-beeb-1dcd0af84aa2'
+namespace: '3b24c8d3-8095-4027-97c2-d8308e746b46'
 user: 'nacos'
 password: 'nacos'
 dataid: 'inventory_srv.json'

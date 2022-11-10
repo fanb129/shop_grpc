@@ -26,4 +26,17 @@ func InitSrvConn() {
 	}
 
 	global.GoodsSrvClient = proto.NewGoodsClient(userConn)
+
+	invConn, err := grpc.Dial(
+		fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.InventorySrvInfo.Name),
+		// 替换 grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
+		grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())),
+	)
+	if err != nil {
+		zap.S().Fatal("[InitSrvConn] 连接 【库存服务失败】")
+	}
+
+	global.InventorySrvClient = proto.NewInventoryClient(invConn)
 }

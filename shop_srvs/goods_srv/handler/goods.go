@@ -95,7 +95,7 @@ func (s *GoodsServer) GoodsList(ctx context.Context, req *proto.GoodsFilterReque
 	case req.PagePerNums <= 0:
 		req.PagePerNums = 10
 	}
-	result, err := global.EsClient.Search().Index(model.EsGoods{}.GetIndexName()).Query(q).From(int(req.Pages)).Size(int(req.PagePerNums)).Do(context.Background())
+	result, err := global.EsClient.Search().Index(model.EsGoods{}.GetIndexName()).Query(q).From(int((req.Pages - 1) * req.PagePerNums)).Size(int(req.PagePerNums)).Do(context.Background())
 	if err != nil {
 		return nil, err
 	}

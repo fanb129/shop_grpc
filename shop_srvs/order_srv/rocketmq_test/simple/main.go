@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	p, err := rocketmq.NewProducer(producer.WithNameServer([]string{"192.168.0.104:9876"}))
+	p, err := rocketmq.NewProducer(producer.WithNameServer([]string{"39.98.32.219:9876"}))
 	if err != nil {
 		panic("生成producer失败")
 	}

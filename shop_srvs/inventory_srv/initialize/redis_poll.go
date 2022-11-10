@@ -9,7 +9,7 @@ import (
 
 func InitRedis() {
 	client := goredislib.NewClient(&goredislib.Options{
-		Addr: fmt.Sprintf("%s:%d"),
+		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),
 	})
 	global.RedisPool = goredis.NewPool(client) // or, pool := redigo.NewPool(...)
 }

@@ -29,7 +29,7 @@ func (o *OrderListener) CheckLocalTransaction(msg *primitive.MessageExt) primiti
 func main() {
 	p, err := rocketmq.NewTransactionProducer(
 		&OrderListener{},
-		producer.WithNameServer([]string{"192.168.0.104:9876"}),
+		producer.WithNameServer([]string{"39.98.32.219:9876"}),
 	)
 	if err != nil {
 		panic("生成producer失败")

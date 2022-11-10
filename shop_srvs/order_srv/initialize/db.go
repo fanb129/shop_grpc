@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"shop_srvs/order_srv/global"
+	"shop_srvs/order_srv/model"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -37,4 +38,5 @@ func InitDB() {
 	if err != nil {
 		panic(err)
 	}
+	_ = global.DB.AutoMigrate(&model.ShoppingCart{}, &model.OrderInfo{}, &model.OrderGoods{})
 }
