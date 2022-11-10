@@ -13,5 +13,6 @@ mkdir -vp target/goods_web
 cp config-pro.yaml target/goods_web/config-pro.yaml
 cp start.sh target/
 
+go mod tidy
 go build -o target/goods_web_main main.go
 echo "构建结束"

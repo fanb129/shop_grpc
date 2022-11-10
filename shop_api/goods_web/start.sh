@@ -1,4 +1,5 @@
 srv_name="goods_web_main"
+echo "start ${srv_name}"
 chmod +x ./$srv_name
 #重启，如果已经存在则关闭重启
 if pgrep -x $srv_name > /dev/null
