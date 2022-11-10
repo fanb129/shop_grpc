@@ -14,6 +14,5 @@ echo "current: ${USER}"
 mkdir -vp target/user_web
 cp config-pro.yaml target/user_web/config-pro.yaml
 
-cd
 go build -o target/user_web_main main.go
 echo "构建结束"

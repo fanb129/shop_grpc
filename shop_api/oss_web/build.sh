@@ -14,6 +14,5 @@ echo "current: ${USER}"
 mkdir -vp target/oss_web
 cp config-pro.yaml target/oss_web/config-pro.yaml
 
-cd
 go build -o target/oss_web_main main.go
 echo "构建结束"
