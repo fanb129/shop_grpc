@@ -1,18 +1,13 @@
 echo "开始构建"
-#export GOPATH=$WORKSPACE/..
-#export PATH=$PATH:$GOROOT/bin
-#
-## Print Go version
-#go version
-#
-#export GO111MODULE=on
-#export GOPROXY=https://goproxy.cn
-#export ENV=local
+export GOROOT=/usr/local/go
+export PATH=$PATH:$GOROOT/bin
+export GO111MODULE=on
+export GOPROXY=https://goproxy.cn
+
+# Print Go version
+go version
 
 echo "current: ${USER}"
-#拷贝配置文件到target下
-mkdir -vp target/goods_srv
-cp config-pro.yaml target/goods_srv/config-pro.yaml
 
-go build -o target/goods_srv_main main.go
+go build -o goods_srv_main goods_srv/main.go
 echo "构建结束"
