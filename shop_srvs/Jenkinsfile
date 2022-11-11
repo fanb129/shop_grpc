@@ -1,20 +1,20 @@
 pipeline {
     agent any
 
-     stage('Pull') {
+    stages {
+        stage('Pull') {
             steps {
                 git branch: 'main', credentialsId: 'b9f7d06b-5685-42ba-8bdd-8e5cabb980f2', url: 'https://gitee.com/fan-bin/shop_grpc.git'
             }
         }
 
-    stages {
         stage('Build') {
             steps {
                 sh 'echo "[build.sh]" && cd shop_srvs && chmod +x ${srv_name}/build.sh && /bin/bash ${srv_name}/build.sh'
             }
         }
 
-    stage('Start') {
+        stage('Start') {
             steps {
                 sshPublisher(publishers: [sshPublisherDesc(configName: '192.168.139.130', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'mkdir -p /data/${srv_name}/shop_srvs/tmp/log/${srv_name}/ && cd /data/${srv_name}/shop_srvs/ && chmod +x ${srv_name}/start.sh && /bin/bash ${srv_name}/start.sh', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${srv_name}/', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'shop_srvs/${srv_name}/config-debug.yaml,shop_srvs/${srv_name}/config-pro.yaml,shop_srvs/${srv_name}_main,shop_srvs/${srv_name}/start.sh')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
             }
