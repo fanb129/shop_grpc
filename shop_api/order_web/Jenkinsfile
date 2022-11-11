@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo "[build.sh]" && mkdir -p shop_api/order_web && cd shop_api && cp $WORKSPACE/../shop_grpc/shop_api/go.mod $WORKSPACE/../shop_grpc/shop_api/go.sum . && cp -a $WORKSPACE/../shop_grpc/shop_api/order_web/** order_web/ && chmod +x order_web/build.sh && /bin/bash order_web/build.sh
+                sh 'echo "[build.sh]" && mkdir -p shop_api/${web_name} && cd shop_api && cp $WORKSPACE/../shop_grpc/shop_api/go.mod $WORKSPACE/../shop_grpc/shop_api/go.sum . && cp -a $WORKSPACE/../shop_grpc/shop_api/${web_name}/** ${web_name}/ && chmod +x ${web_name}/build.sh && /bin/bash ${web_name}/build.sh'
             }
         }
 
