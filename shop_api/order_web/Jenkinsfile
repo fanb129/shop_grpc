@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "[build.sh]" && mkdir -p shop_api/order_web && cd shop_api && cp $WORKSPACE/../shop_grpc/shop_api/go.mod $WORKSPACE/../shop_grpc/shop_api/go.sum . && cp -a $WORKSPACE/../shop_grpc/shop_api/order_web/** order_web/ && chmod +x order_web/build.sh && /bin/bash order_web/build.sh
+            }
+        }
+
+    stage('Start') {
+            steps {
+                sshPublisher(publishers: [sshPublisherDesc(configName: '192.168.139.130', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'mkdir -p /data/order_web/shop_api/tmp/log/order_web/ && cd /data/order_web/shop_api/ && chmod +x order_web/start.sh && /bin/bash order_web/start.sh', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'order_web/', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'shop_api/order_web/config-debug.yaml,shop_api/order_web/config-pro.yaml,shop_api/order_web_main,shop_api/order_web/start.sh')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+            }
+        }
+
+    }
+}
