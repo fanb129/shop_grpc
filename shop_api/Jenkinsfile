@@ -1,16 +1,22 @@
 pipeline {
     agent any
 
+     stage('Pull') {
+            steps {
+                git branch: 'main', credentialsId: 'b9f7d06b-5685-42ba-8bdd-8e5cabb980f2', url: 'https://gitee.com/fan-bin/shop_grpc.git'
+            }
+        }
+
     stages {
         stage('Build') {
             steps {
-                sh 'echo "[build.sh]" && mkdir -p shop_api/${web_name} && cd shop_api && cp $WORKSPACE/../shop_grpc/shop_api/go.mod $WORKSPACE/../shop_grpc/shop_api/go.sum . && cp -a $WORKSPACE/../shop_grpc/shop_api/${web_name}/** ${web_name}/ && chmod +x ${web_name}/build.sh && /bin/bash ${web_name}/build.sh'
+                sh 'echo "[build.sh]" && cd shop_api && chmod +x ${web_name}/build.sh && /bin/bash ${web_name}/build.sh'
             }
         }
 
     stage('Start') {
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: '192.168.139.130', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'mkdir -p /data/order_web/shop_api/tmp/log/order_web/ && cd /data/order_web/shop_api/ && chmod +x order_web/start.sh && /bin/bash order_web/start.sh', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'order_web/', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'shop_api/order_web/config-debug.yaml,shop_api/order_web/config-pro.yaml,shop_api/order_web_main,shop_api/order_web/start.sh')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: '192.168.139.130', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'mkdir -p /data/${web_name}/shop_api/tmp/log/${web_name}/ && cd /data/${web_name}/shop_api/ && chmod +x ${web_name}/start.sh && /bin/bash ${web_name}/start.sh', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${web_name}/', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'shop_api/${web_name}/config-debug.yaml,shop_api/${web_name}/config-pro.yaml,shop_api/${web_name}_main,shop_api/${web_name}/start.sh')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
             }
         }
 
